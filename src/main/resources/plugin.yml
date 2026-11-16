@@ -1,0 +1,8 @@
+name: CustomCrates
+version: 1.0
+main: cz.tvojeserver.customcrates.CustomCrates
+api-version: '1.20'
+commands:
+  crate:
+    description: Sprava a otevirani gamba crate
+    usage: /crate <give|open>
