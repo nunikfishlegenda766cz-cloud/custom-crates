@@ -47,7 +47,9 @@ public class CustomCrates extends JavaPlugin implements CommandExecutor, TabComp
 
             ItemStack key = createKeyItem();
             target.getInventory().addItem(key);
-            sender.sendMessage(ChatColor.GREEN + "Hráči " + target.getName" + " byl dán gamba klíč!");
+            
+            // Zde byla opravena chyba s chybějícími závorkami u target.getName()
+            sender.sendMessage(ChatColor.GREEN + "Hráči " + target.getName() + " byl dán gamba klíč!");
             target.sendMessage(ChatColor.GOLD + "Dostal jsi Gamba klíč! Otevři bednu příkazem /crate open.");
             return true;
         }
@@ -55,7 +57,6 @@ public class CustomCrates extends JavaPlugin implements CommandExecutor, TabComp
         if (args.length >= 1 && args[0].equalsIgnoreCase("open")) {
             if (!(sender instanceof Player player)) return true;
             
-            // Zkontrolujeme, zda hráč drží klíč
             ItemStack hand = player.getInventory().getItemInMainHand();
             if (!isKey(hand)) {
                 player.sendMessage(ChatColor.RED + "Musíš držet Gamba klíč v hlavní ruce!");
@@ -64,7 +65,6 @@ public class CustomCrates extends JavaPlugin implements CommandExecutor, TabComp
 
             if (openingPlayers.contains(player.getUniqueId())) return true;
 
-            // Odebereme 1 klíč
             hand.setAmount(hand.getAmount() - 1);
             startRoulette(player);
             return true;
@@ -105,7 +105,6 @@ public class CustomCrates extends JavaPlugin implements CommandExecutor, TabComp
 
         new BukkitRunnable() {
             int step = 0;
-            int speed = 2; // rychlost točení
 
             @Override
             public void run() {
@@ -122,9 +121,8 @@ public class CustomCrates extends JavaPlugin implements CommandExecutor, TabComp
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1.5f);
 
                 step++;
-                if (step > 25) { //konec točení
+                if (step > 25) {
                     ItemStack reward = pool.get(rand.nextInt(pool.size()));
-                    // Vystředíme výhru do slotu 13
                     for (int i = 0; i < 27; i++) {
                         inv.setItem(i, new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
                     }
@@ -132,11 +130,13 @@ public class CustomCrates extends JavaPlugin implements CommandExecutor, TabComp
                     player.getInventory().addItem(reward);
                     
                     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVEL_UP, 1f, 1f);
-                    player.sendTitle(ChatColor.GOLD + "VÝHRA!", ChatColor.YELLOW + (reward.hasItemMeta() && reward.getItemMeta().hasDisplayName() ? reward.getItemMeta().getDisplayName() : reward.getType().name()), 10, 40, 10);
+                    String rewardName = (reward.hasItemMeta() && reward.getItemMeta().hasDisplayName()) 
+                            ? reward.getItemMeta().getDisplayName() 
+                            : reward.getType().name();
+                    player.sendTitle(ChatColor.GOLD + "VÝHRA!", ChatColor.YELLOW + rewardName, 10, 40, 10);
                     
                     openingPlayers.remove(player.getUniqueId());
                     
-                    // Zavřít inventář po 3 sekundách
                     new BukkitRunnable() {
                         @Override
                         public void run() {
