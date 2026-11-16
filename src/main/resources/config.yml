@@ -1,0 +1,4 @@
+# Konfigurace CustomCrates
+crates:
+  default:
+    name: "Gamba Crate"
